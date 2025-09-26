@@ -3,9 +3,19 @@ import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Bot, User, AlertCircle } from 'lucide-react';
+import WeatherDisplay from '../weather/WeatherDisplay';
 
 const ChatMessage = ({ message, className }) => {
   const { content, isUser, timestamp, language, isLoading, error } = message;
+
+  // Parse weather information from response
+  const parseWeatherFromContent = (content) => {
+    // Simple regex to detect weather emoji patterns
+    // eslint-disable-next-line no-misleading-character-class
+    return /[🌍🌡️💧🌀💨👁️⏰📅☀️☁️🌧️❄️⛈️🌦️🌫️🌤️]/gu.test(content);
+  };
+
+  const hasWeatherInfo = !isUser && parseWeatherFromContent(content);
 
   const formatTimestamp = (date) => {
     return date.toLocaleTimeString(language === 'japanese' ? 'ja-JP' : 'en-US', {
@@ -49,6 +59,7 @@ const ChatMessage = ({ message, className }) => {
             ? 'bg-primary text-primary-foreground ml-auto' 
             : 'bg-muted',
           error && 'border-destructive bg-destructive/10',
+          hasWeatherInfo && 'p-0 overflow-hidden'
         )}>
           {isLoading ? (
             <div className="flex items-center gap-2 text-muted-foreground">
@@ -59,6 +70,8 @@ const ChatMessage = ({ message, className }) => {
               <AlertCircle className="w-4 h-4" />
               <span className="text-sm">{error}</span>
             </div>
+          ) : hasWeatherInfo ? (
+            <WeatherDisplay content={content} language={language} />
           ) : (
             <div className={cn(
               'whitespace-pre-wrap text-sm leading-relaxed',
