@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, Field
 
 
@@ -10,3 +11,9 @@ class ChatResponse(BaseModel):
     response: str = Field(..., description="AI response in the same language as the user's input")
     success: bool = Field(default=True, description="Whether the request was successful")
     error: str | None = Field(default=None, description="Error message if any")
+    
+    
+class ErrorDetail(BaseModel):
+    error: str = Field(..., description="User-friendly error message")
+    code: str = Field(..., description="Error code for categorization")
+    language: Optional[str] = Field(default=None, description="Detected language for localized errors")
