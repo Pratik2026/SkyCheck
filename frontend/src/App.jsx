@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import ChatInterface from "./components/chat/ChatInterface";
 import "./App.css";
 import Header from "./components/Header";
+import DoodleBackground from "./components/chat/doodleBackground";
 function App() {
   const [language, setLanguage] = useState("english");
 
@@ -12,7 +14,13 @@ function App() {
     <div className="min-h-screen flex flex-col text-foreground transition-colors ">
       {/* Header */}
       <Header language={language} onLanguageChange={handleLanguageChange} />
-  
+      <DoodleBackground opacity={0.035}>
+        <ChatInterface
+          className="flex-1 flex flex-col min-h-full"
+          language={language}
+          onLanguageChange={handleLanguageChange}
+        />
+      </DoodleBackground>
     </div>
   );
 }
