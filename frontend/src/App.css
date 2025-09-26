@@ -1,24 +1,315 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 0rem 1rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Add these styles to your App.css or global CSS file */
+
+/* Input field focus effects */
+.input-field {
+  position: relative;
+  transition: all 0.2s ease-in-out;
 }
 
-@keyframes logo-spin {
+/* Focus ring animation */
+.input-field:focus-within {
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
+}
+
+/* Smooth button transitions */
+.input-controls-btn {
+  transition: all 0.15s ease-in-out;
+}
+
+.input-controls-btn:hover {
+  transform: scale(1.05);
+}
+
+.input-controls-btn:active {
+  transform: scale(0.95);
+}
+
+/* Voice recording pulse effect */
+@keyframes pulse-recording {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.voice-recording {
+  animation: pulse-recording 1.5s ease-in-out infinite;
+}
+
+/* Send button gradient when enabled */
+.send-button-enabled {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)),
+    hsl(var(--primary) / 0.8)
+  );
+}
+
+/* Disabled state */
+.send-button-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Loading state animation */
+@keyframes loading-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.loading-indicator {
+  animation: loading-pulse 1s ease-in-out infinite;
+}
+
+/* Input placeholder animation */
+.input-field input::placeholder {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.input-field:focus-within input::placeholder {
+  opacity: 0.6;
+}
+
+/* Smooth border transition */
+.input-field input {
+  border: 2px solid hsl(var(--border));
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.input-field:focus-within input {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.1);
+}
+
+/* Smooth scrolling for the entire app */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar styles */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Firefox scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--muted));
+  /* Add extra padding at bottom for complete scroll */
+  padding-bottom: 20px;
+}
+
+/* Enhanced message animations */
+@keyframes slide-in-from-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.message-enter {
+  animation: slide-in-from-bottom 0.3s ease-out;
+}
+
+.animate-in {
+  animation-fill-mode: both;
+}
+
+.slide-in-from-bottom-2 {
+  animation: slide-in-from-bottom 0.2s ease-out;
+}
+
+.fade-in-0 {
+  animation: fade-in 0.2s ease-out;
+}
+
+.zoom-in-95 {
+  animation: zoom-in 0.2s ease-out;
+}
+
+.duration-200 {
+  animation-duration: 200ms;
+}
+
+/* Weather display themes */
+.weather-sunny {
+  background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
+}
+
+.weather-rainy {
+  background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+}
+
+.weather-snowy {
+  background: linear-gradient(135deg, #90a4ae 0%, #607d8b 100%);
+}
+
+.weather-stormy {
+  background: linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%);
+}
+
+.weather-cloudy {
+  background: linear-gradient(135deg, #78909c 0%, #546e7a 100%);
+}
+
+/* Japanese text styling */
+.japanese-text {
+  font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic", "Meiryo",
+    sans-serif;
+  line-height: 1.7;
+}
+
+/* Typing indicator animation */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.typing-indicator span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: currentColor;
+  opacity: 0.4;
+  animation: typing-dot 1.4s infinite ease-in-out;
+  animation-delay: calc(var(--delay) * 0.2s);
+}
+
+@keyframes typing-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Enhanced focus styles */
+.focus\:border-primary:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.1);
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+.transition-colors {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+/* Enhanced button hover effects */
+.hover\:scale-105:hover {
+  transform: scale(1.05);
+}
+
+/* Message content spacing */
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Scroll area enhancements */
+[data-radix-scroll-area-viewport] {
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  /* Ensure scrolling can reach the absolute bottom */
+  padding-bottom: 16px;
+}
+
+/* Ensure the scroll container has proper bottom spacing */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--muted));
+  /* Add extra padding at bottom for complete scroll */
+  padding-bottom: 20px;
+}
+
+/* Improved input styling */
+.rounded-full {
+  border-radius: 9999px;
+}
+
+/* Loading states */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
   from {
     transform: rotate(0deg);
   }
@@ -27,16 +318,55 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+/* Responsive design improvements */
+@media (max-width: 640px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .message-enter {
+    animation-duration: 0.2s;
   }
 }
 
-.card {
-  padding: 2em;
+/* Dark mode specific enhancements */
+@media (prefers-color-scheme: dark) {
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.4);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.6);
+  }
 }
 
-.read-the-docs {
-  color: #888;
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground));
+  }
 }
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .message-enter,
+  .animate-in,
+  .transition-all,
+  .transition-colors {
+    animation: none;
+    transition: none;
+  }
+
+  [data-radix-scroll-area-viewport] {
+    scroll-behavior: auto;
+  }
+}
+
