@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { cn } from "@/lib/utils";
-import { Droplets, Wind, Eye, Gauge, Clock } from "lucide-react";
+import { Droplets, Wind, Eye, Gauge } from "lucide-react";
 
 const WeatherDisplay = ({ content, language, className }) => {
   // Parse weather information from the formatted content

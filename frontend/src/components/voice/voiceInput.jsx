@@ -80,6 +80,7 @@ const VoiceInput = ({
         recognition.stop();
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language]);
 
   const startListening = useCallback(() => {

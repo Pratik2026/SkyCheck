@@ -7,6 +7,8 @@ import InputSection from "./InputSection";
 import { cn } from "@/lib/utils";
 import { RefreshCw } from "lucide-react";
 import { apiService } from "../../services/api";
+import { toast } from "react-toastify";
+import Welcome from "./welcome";
 
 const ChatInterface = ({ className, language, onLanguageChange }) => {
   const [messages, setMessages] = useState([]);
@@ -34,41 +36,65 @@ const ChatInterface = ({ className, language, onLanguageChange }) => {
     return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  // Add welcome message on first load
-  useEffect(() => {
-    const welcomeMessage = {
-      id: generateMessageId(),
-      content: `こんにちは！天気について何でも聞いてください。音声入力も対応しています。
+  const getErrorToastMessage = (error, language) => {
+    const isJapanese = language === "japanese";
 
-Hello! Ask me anything about the weather. Voice input is also supported.`,
-      isUser: false,
-      timestamp: new Date(),
-      language: "japanese",
-    };
-    setMessages([welcomeMessage]);
-  }, []);
+    switch (error.code) {
+      case "AUTH_ERROR":
+      case "INVALID_API_KEY":
+        return isJapanese
+          ? "無効なAPIキーです。設定を確認してください。"
+          : "Invalid API key or authentication error. Please try again later.";
 
-  const sendMessage = async (messageText) => {
+      case "RATE_LIMIT_ERROR":
+        return isJapanese
+          ? "リクエストが多すぎます。少し待ってから再度お試しください。"
+          : "Too many requests. Please wait a moment and try again.";
+
+      case "TIMEOUT_ERROR":
+        return isJapanese
+          ? "リクエストがタイムアウトしました。再度お試しください。"
+          : "Request timed out. Please try again.";
+
+      case "NETWORK_ERROR":
+        return isJapanese
+          ? "ネットワークエラーです。接続を確認して再度お試しください。"
+          : "Network error. Please check your connection and try again.";
+
+      case "SERVER_ERROR":
+        return isJapanese
+          ? "サーバーエラーが発生しました。しばらくしてから再度お試しください。"
+          : "Server error occurred. Please try again later.";
+
+      default:
+        return isJapanese
+          ? `エラーが発生しました: ${error.message}`
+          : `An error occurred: ${error.message}`;
+    }
+  };
+
+  const sendMessage = async (messageText, isRetry = false) => {
     if (!messageText.trim() || isLoading) {
       return;
     }
 
-    // Use manual language setting if set, otherwise auto-detect
     const detectedLanguage = detectLanguage(messageText);
 
-    // Update language if auto-detecting and not manually set
     if (onLanguageChange) {
       onLanguageChange(detectedLanguage);
     }
 
-    // Add user message
-    const userMessage = {
-      id: generateMessageId(),
-      content: messageText.trim(),
-      isUser: true,
-      timestamp: new Date(),
-      language: detectedLanguage,
-    };
+    // Only add user message if this is not a retry
+    let userMessage;
+    if (!isRetry) {
+      userMessage = {
+        id: generateMessageId(),
+        content: messageText.trim(),
+        isUser: true,
+        timestamp: new Date(),
+        language: detectedLanguage,
+      };
+    }
 
     // Add loading message
     const loadingMessage = {
@@ -80,17 +106,21 @@ Hello! Ask me anything about the weather. Voice input is also supported.`,
       isLoading: true,
     };
 
-    setMessages((prev) => [...prev, userMessage, loadingMessage]);
+    if (!isRetry) {
+      setMessages((prev) => [...prev, userMessage, loadingMessage]);
+    } else {
+      setMessages((prev) => [...prev, loadingMessage]);
+    }
+
     setInput("");
     setIsLoading(true);
 
     try {
       const response = await apiService.sendMessage({
         message: messageText.trim(),
-        location: "", // Let AI extract location
+        location: "",
       });
 
-      // Replace loading message with response
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === loadingMessage.id
@@ -98,24 +128,34 @@ Hello! Ask me anything about the weather. Voice input is also supported.`,
                 ...msg,
                 content: response.response,
                 isLoading: false,
-                error: response.success ? undefined : response.error,
+                error: !response.success,
               }
             : msg
         )
       );
+
+      if (response.success) {
+        toast(
+          detectedLanguage === "japanese"
+            ? "メッセージが正常に送信されました"
+            : "Message sent successfully", { type: "success" }
+        );
+      }
     } catch (error) {
-      // Replace loading message with error
+      const errorMessage = getErrorToastMessage(error, detectedLanguage);
+
+      toast(errorMessage, { type: "error" });
+
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === loadingMessage.id
             ? {
                 ...msg,
-                content:
-                  detectedLanguage === "japanese"
-                    ? "エラーが発生しました。もう一度お試しください。"
-                    : "An error occurred. Please try again.",
+                content: "",
                 isLoading: false,
-                error: error.message || "Unknown error",
+                error: true,
+                originalQuery: messageText.trim(),
+                errorCode: error.code,
               }
             : msg
         )
@@ -123,6 +163,11 @@ Hello! Ask me anything about the weather. Voice input is also supported.`,
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleRetry = (originalQuery) => {
+    setMessages((prev) => prev.filter((msg) => !msg.error));
+    sendMessage(originalQuery, true);
   };
 
   const handleVoiceResult = (result) => {
@@ -133,7 +178,6 @@ Hello! Ask me anything about the weather. Voice input is also supported.`,
         sendMessage(result.transcript);
       }, 500);
     } else {
-      // Show interim results
       setInput(result.transcript);
     }
   };
@@ -141,45 +185,31 @@ Hello! Ask me anything about the weather. Voice input is also supported.`,
   const handleVoiceError = (error) => {
     console.error("Voice recognition error:", error);
 
-    const errorMessage = {
-      id: generateMessageId(),
-      content:
-        language === "japanese"
-          ? `音声認識エラー: ${error.error}`
-          : `Voice recognition error: ${error.error}`,
-      isUser: false,
-      timestamp: new Date(),
-      language: language,
-      error: error.error,
-    };
-
-    setMessages((prev) => [...prev, errorMessage]);
+    toast(
+      language === "japanese"
+        ? `音声認識エラー: ${error.error}`
+        : `Voice recognition error: ${error.error}`, { type: "error" }
+    );
   };
 
   const clearChat = () => {
-    const welcomeMessage = {
-      id: generateMessageId(),
-      content:
-        language === "japanese"
-          ? "チャット履歴がクリアされました。天気について何でも聞いてください。"
-          : "Chat history cleared. Ask me anything about the weather.",
-      isUser: false,
-      timestamp: new Date(),
-      language: language,
-      isSystem: true,
-    };
-
-    setMessages([welcomeMessage]);
+    setMessages([]);
     setInput("");
+
+    toast(
+      language === "japanese"
+        ? "チャット履歴がクリアされました"
+        : "Chat history cleared", { type: "info" }
+    );
   };
 
   return (
     <div
-  className={cn(
-    "relative h-[calc(100vh-72px)] overflow-hidden flex flex-col",
-    className
-  )}
->
+      className={cn(
+        "relative h-[calc(100vh-72px)] overflow-hidden flex flex-col",
+        className
+      )}
+    >
       {/* Chat Header */}
       <CardHeader className="flex-shrink-0">
         <div className="flex items-center justify-end">
@@ -202,25 +232,14 @@ Hello! Ask me anything about the weather. Voice input is also supported.`,
         <ScrollArea className="flex-1 min-h-0 px-4" ref={scrollAreaRef}>
           <div className="space-y-4 min-h-full">
             {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground min-h-[400px]">
-                <div className="text-6xl mb-4">🌤️</div>
-                <h3 className="text-lg font-medium mb-2">
-                  {language === "japanese"
-                    ? "お天気チャットボット"
-                    : "Weather Chatbot"}
-                </h3>
-                <p className="text-sm max-w-md">
-                  {language === "japanese"
-                    ? "音声またはテキストで天気について質問してください"
-                    : "Ask about the weather using voice or text input"}
-                </p>
-              </div>
+              <Welcome language={language} />
             ) : (
               messages.map((message) => (
                 <ChatMessage
                   key={message.id}
                   message={message}
                   className="animate-in slide-in-from-bottom-2 duration-200"
+                  onRetry={handleRetry}
                 />
               ))
             )}

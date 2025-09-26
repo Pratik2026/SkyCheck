@@ -50,9 +50,9 @@ const Header = ({ language, onLanguageChange }) => {
               <span className="text-lg">🌤️</span>
             </div>
             <div>
-              <h1 className="text-lg font-semibold">Weather Chatbot</h1>
+              <h1 className="text-lg font-semibold">SkyCheck</h1>
               <p className="text-xs text-muted-foreground">
-                AI-Powered Weather Assistant
+                AI-Powered Chatbot
               </p>
             </div>
           </div>

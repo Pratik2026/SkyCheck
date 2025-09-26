@@ -1,16 +1,16 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
-import { Bot, User, AlertCircle } from 'lucide-react';
+import { Bot, User, AlertCircle, Loader2, RotateCcw } from 'lucide-react';
 import WeatherDisplay from '../weather/WeatherDisplay';
 
-const ChatMessage = ({ message, className }) => {
-  const { content, isUser, timestamp, language, isLoading, error } = message;
+const ChatMessage = ({ message, className, onRetry }) => {
+  const { content, isUser, timestamp, language, isLoading, error, originalQuery } = message;
 
-  // Parse weather information from response
   const parseWeatherFromContent = (content) => {
-    // Simple regex to detect weather emoji patterns
     // eslint-disable-next-line no-misleading-character-class
     return /[🌍🌡️💧🌀💨👁️⏰📅☀️☁️🌧️❄️⛈️🌦️🌫️🌤️]/gu.test(content);
   };
@@ -31,6 +31,31 @@ const ChatMessage = ({ message, className }) => {
       <span style={{ '--delay': '2' }} />
     </div>
   );
+
+  const markdownComponents = {
+    p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
+    strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+    em: ({ children }) => <em className="italic">{children}</em>,
+    ul: ({ children }) => <ul className="list-disc list-inside space-y-1 my-2 ml-4">{children}</ul>,
+    ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 my-2 ml-4">{children}</ol>,
+    li: ({ children }) => <li className="mb-1">{children}</li>,
+    h1: ({ children }) => <h1 className="text-lg font-bold mt-4 mb-2">{children}</h1>,
+    h2: ({ children }) => <h2 className="text-base font-bold mt-3 mb-2">{children}</h2>,
+    h3: ({ children }) => <h3 className="text-sm font-semibold mt-3 mb-2">{children}</h3>,
+    code: ({ children, inline }) => 
+      inline ? (
+        <code className="bg-muted px-1 py-0.5 rounded text-sm font-mono">{children}</code>
+      ) : (
+        <pre className="bg-muted p-3 rounded text-sm font-mono overflow-x-auto my-2">
+          <code>{children}</code>
+        </pre>
+      ),
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-4 border-muted-foreground/20 pl-4 my-2 italic">
+        {children}
+      </blockquote>
+    ),
+  };
 
   return (
     <div className={cn(
@@ -66,18 +91,40 @@ const ChatMessage = ({ message, className }) => {
               <TypingIndicator />
             </div>
           ) : error ? (
-            <div className="flex items-center gap-2 text-destructive">
-              <AlertCircle className="w-4 h-4" />
-              <span className="text-sm">{error}</span>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-destructive">
+                <AlertCircle className="w-4 h-4" />
+                <span className="text-sm">
+                  {language === 'japanese' 
+                    ? 'メッセージの送信に失敗しました' 
+                    : 'Failed to send message'
+                  }
+                </span>
+              </div>
+              {onRetry && originalQuery && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onRetry(originalQuery)}
+                  className="w-full text-xs retry-button"
+                >
+                  <RotateCcw className="w-3 h-3 mr-2" />
+                  {language === 'japanese' ? '再試行' : 'Retry'}
+                </Button>
+              )}
             </div>
           ) : hasWeatherInfo ? (
             <WeatherDisplay content={content} language={language} />
           ) : (
             <div className={cn(
-              'whitespace-pre-wrap text-sm leading-relaxed',
-              language === 'japanese' && 'japanese-text'
+              'text-sm leading-relaxed prose prose-sm max-w-none',
+              language === 'japanese' && 'japanese-text',
+              'prose-p:mb-2 prose-ul:my-2 prose-li:mb-1',
+              isUser ? 'text-primary-foreground' : 'text-foreground'
             )}>
-              {content}
+              <ReactMarkdown components={markdownComponents}>
+                {content}
+              </ReactMarkdown>
             </div>
           )}
         </Card>

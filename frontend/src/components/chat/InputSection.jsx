@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import VoiceInput from '../voice/VoiceInput';
 import { cn } from '@/lib/utils';
 import { Send, Loader2 } from 'lucide-react';
@@ -59,19 +60,34 @@ const InputSection = ({
           />
 
           {/* Right Side Controls Container */}
-          <div className="absolute right-2 flex items-center gap-1">
-            {/* Voice Input Button */}
-            <VoiceInput
-              onResult={onVoiceResult}
-              onError={onVoiceError}
-              language={language === 'japanese' ? 'ja-JP' : 'en-US'}
-              disabled={isLoading}
-              className={cn(
-                'h-8 w-8 p-0 rounded-full border-0 bg-transparent',
-                'hover:bg-muted transition-colors duration-200',
-                'flex-shrink-0'
-              )}
-            />
+          <div className="absolute right-2 flex items-center gap-4">
+            {/* Voice Input Button with Tooltip */}
+            <TooltipProvider delayDuration={250}>
+              <Tooltip
+                // Only show helpful hint when not already in Japanese
+                open={language !== 'japanese' ? undefined : false}
+              >
+                <TooltipTrigger asChild>
+                  <span>
+                    <VoiceInput
+                      onResult={onVoiceResult}
+                      onError={onVoiceError}
+                      language={language === 'japanese' ? 'ja-JP' : 'en-US'}
+                      disabled={isLoading}
+                      aria-label="音声入力"
+                      className={cn(
+                        'h-8 w-8 p-0 rounded-full border-0 bg-muted',
+                        'hover:bg-muted transition-colors duration-200',
+                        'flex-shrink-0'
+                      )}
+                    />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" align="end" className="max-w-[220px] text-center">
+                  右上から言語を「日本語」に切り替えてください。
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
             {/* Send Button */}
             <Button

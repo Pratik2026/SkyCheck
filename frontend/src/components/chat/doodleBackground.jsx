@@ -1,9 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-// Doodle Background Component
 const DoodleBackground = ({ children, className, opacity = 0.03 }) => {
-  // SVG version of the doodle pattern - more scalable and controllable
   const doodleSvg = `
     <svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
       <defs>

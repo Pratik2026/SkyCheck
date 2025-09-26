@@ -370,3 +370,18 @@ html {
   }
 }
 
+/* Japanese text support in toasts */
+.japanese-text-toast {
+  font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  line-height: 1.6;
+}
+
+/* Enhanced retry button styling */
+.retry-button {
+  transition: all 0.2s ease-in-out;
+}
+
+.retry-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

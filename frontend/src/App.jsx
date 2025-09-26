@@ -3,6 +3,8 @@ import ChatInterface from "./components/chat/ChatInterface";
 import "./App.css";
 import Header from "./components/Header";
 import DoodleBackground from "./components/chat/doodleBackground";
+import { ToastContainer } from "react-toastify";
+
 function App() {
   const [language, setLanguage] = useState("english");
 
@@ -21,6 +23,7 @@ function App() {
           onLanguageChange={handleLanguageChange}
         />
       </DoodleBackground>
+      <ToastContainer position="top-center" autoClose={3000}/>
     </div>
   );
 }
