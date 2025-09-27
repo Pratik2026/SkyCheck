@@ -39,7 +39,7 @@ const Welcome = ({ language = "english" }) => {
 
           {/* Title — indigo/blue gradient to match theme */}
           <h1
-            className="mt-6 text-3xl md:text-4xl font-extrabold tracking-tight leading-tight
+            className="mt-6 text-2xl md:text-4xl font-extrabold tracking-tight leading-tight
                        font-[Inter]
                        bg-gradient-to-r
                        from-indigo-200 via-indigo-300 to-blue-300
@@ -51,7 +51,7 @@ const Welcome = ({ language = "english" }) => {
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-3 text-base md:text-lg text-muted-foreground font-[Inter]">
+          <p className="mt-3 text-sm md:text-lg text-muted-foreground font-[Inter]">
             {t.subtitle}
           </p>
         </div>

@@ -219,7 +219,7 @@ const ChatInterface = ({ className, language, onLanguageChange }) => {
       </CardHeader>
 
       {/* Middle: Messages + Input */}
-      <div className="flex-1 min-h-0 flex flex-col mx-16">
+      <div className="flex-1 min-h-0 flex flex-col md:mx-16">
         {/* Messages Area */}
         <ScrollArea className="flex-1 min-h-0 px-4" ref={scrollAreaRef}>
           <div className="space-y-4 min-h-full">
@@ -249,7 +249,7 @@ const ChatInterface = ({ className, language, onLanguageChange }) => {
             language={language}
             isLoading={isLoading}
           />
-          <footer className="px-4 py-2 w-full">
+          <footer className="md:px-4 py-2 w-full">
             <div className="container mx-auto text-center text-xs text-muted-foreground">
               <p>
                 Powered by{" "}

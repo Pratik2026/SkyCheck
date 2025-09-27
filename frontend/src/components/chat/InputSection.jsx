@@ -39,7 +39,7 @@ const InputSection = ({
   };
 
   return (
-    <div className={cn(' px-4 py-2', className)}>
+    <div className={cn('px-2 md:px-4 py-2', className)}>
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
         <div className="relative flex items-center">
           {/* Main Input Field */}
