@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
-import VoiceInput from '../voice/VoiceInput';
+import VoiceInput from '../voice/voiceInput';
 import { cn } from '@/lib/utils';
 import { Send, Loader2 } from 'lucide-react';
 
