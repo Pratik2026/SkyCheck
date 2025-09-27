@@ -1,50 +1,69 @@
-import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import { Card } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { cn } from '@/lib/utils';
-import { Bot, User, AlertCircle, Loader2, RotateCcw } from 'lucide-react';
-import WeatherDisplay from '../weather/WeatherDisplay';
+import React from "react";
+import ReactMarkdown from "react-markdown";
+import { Card } from "../ui/card";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
+import { Bot, User, AlertCircle, RotateCcw } from "lucide-react";
 
 const ChatMessage = ({ message, className, onRetry }) => {
-  const { content, isUser, timestamp, language, isLoading, error, originalQuery } = message;
-
-  const parseWeatherFromContent = (content) => {
-    // eslint-disable-next-line no-misleading-character-class
-    return /[🌍🌡️💧🌀💨👁️⏰📅☀️☁️🌧️❄️⛈️🌦️🌫️🌤️]/gu.test(content);
-  };
-
-  const hasWeatherInfo = !isUser && parseWeatherFromContent(content);
+  const {
+    content,
+    isUser,
+    timestamp,
+    language,
+    isLoading,
+    error,
+    originalQuery,
+  } = message;
 
   const formatTimestamp = (date) => {
-    return date.toLocaleTimeString(language === 'japanese' ? 'ja-JP' : 'en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return date.toLocaleTimeString(
+      language === "japanese" ? "ja-JP" : "en-US",
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    );
   };
 
   const TypingIndicator = () => (
     <div className="typing-indicator">
-      <span style={{ '--delay': '0' }} />
-      <span style={{ '--delay': '1' }} />
-      <span style={{ '--delay': '2' }} />
+      <span style={{ "--delay": "0" }} />
+      <span style={{ "--delay": "1" }} />
+      <span style={{ "--delay": "2" }} />
     </div>
   );
 
   const markdownComponents = {
     p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
-    strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+    strong: ({ children }) => (
+      <strong className="font-semibold">{children}</strong>
+    ),
     em: ({ children }) => <em className="italic">{children}</em>,
-    ul: ({ children }) => <ul className="list-disc list-inside space-y-1 my-2 ml-4">{children}</ul>,
-    ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 my-2 ml-4">{children}</ol>,
+    ul: ({ children }) => (
+      <ul className="list-disc list-inside space-y-1 my-2 ml-4">{children}</ul>
+    ),
+    ol: ({ children }) => (
+      <ol className="list-decimal list-inside space-y-1 my-2 ml-4">
+        {children}
+      </ol>
+    ),
     li: ({ children }) => <li className="mb-1">{children}</li>,
-    h1: ({ children }) => <h1 className="text-lg font-bold mt-4 mb-2">{children}</h1>,
-    h2: ({ children }) => <h2 className="text-base font-bold mt-3 mb-2">{children}</h2>,
-    h3: ({ children }) => <h3 className="text-sm font-semibold mt-3 mb-2">{children}</h3>,
-    code: ({ children, inline }) => 
+    h1: ({ children }) => (
+      <h1 className="text-lg font-bold mt-4 mb-2">{children}</h1>
+    ),
+    h2: ({ children }) => (
+      <h2 className="text-base font-bold mt-3 mb-2">{children}</h2>
+    ),
+    h3: ({ children }) => (
+      <h3 className="text-sm font-semibold mt-3 mb-2">{children}</h3>
+    ),
+    code: ({ children, inline }) =>
       inline ? (
-        <code className="bg-muted px-1 py-0.5 rounded text-sm font-mono">{children}</code>
+        <code className="bg-muted px-1 py-0.5 rounded text-sm font-mono">
+          {children}
+        </code>
       ) : (
         <pre className="bg-muted p-3 rounded text-sm font-mono overflow-x-auto my-2">
           <code>{children}</code>
@@ -58,11 +77,13 @@ const ChatMessage = ({ message, className, onRetry }) => {
   };
 
   return (
-    <div className={cn(
-      'flex gap-3 message-enter',
-      isUser ? 'justify-end' : 'justify-start',
-      className
-    )}>
+    <div
+      className={cn(
+        "flex gap-3 message-enter",
+        isUser ? "justify-end" : "justify-start",
+        className
+      )}
+    >
       {/* Avatar */}
       {!isUser && (
         <div className="flex-shrink-0">
@@ -73,19 +94,20 @@ const ChatMessage = ({ message, className, onRetry }) => {
       )}
 
       {/* Message Content */}
-      <div className={cn(
-        'flex flex-col max-w-[80%] sm:max-w-[70%]',
-        isUser ? 'items-end' : 'items-start'
-      )}>
+      <div
+        className={cn(
+          "flex flex-col max-w-[80%] sm:max-w-[70%]",
+          isUser ? "items-end" : "items-start"
+        )}
+      >
         {/* Message Bubble */}
-        <Card className={cn(
-          'px-4 py-3 shadow-sm',
-          isUser 
-            ? 'bg-primary text-primary-foreground ml-auto' 
-            : 'bg-muted',
-          error && 'border-destructive bg-destructive/10',
-          hasWeatherInfo && 'p-0 overflow-hidden'
-        )}>
+        <Card
+          className={cn(
+            "px-4 py-3 shadow-sm",
+            isUser ? "bg-primary text-primary-foreground ml-auto" : "bg-muted",
+            error && "border-destructive bg-destructive/10"
+          )}
+        >
           {isLoading ? (
             <div className="flex items-center gap-2 text-muted-foreground">
               <TypingIndicator />
@@ -95,10 +117,9 @@ const ChatMessage = ({ message, className, onRetry }) => {
               <div className="flex items-center gap-2 text-destructive">
                 <AlertCircle className="w-4 h-4" />
                 <span className="text-sm">
-                  {language === 'japanese' 
-                    ? 'メッセージの送信に失敗しました' 
-                    : 'Failed to send message'
-                  }
+                  {language === "japanese"
+                    ? "メッセージの送信に失敗しました"
+                    : "Failed to send message"}
                 </span>
               </div>
               {onRetry && originalQuery && (
@@ -109,19 +130,19 @@ const ChatMessage = ({ message, className, onRetry }) => {
                   className="w-full text-xs retry-button"
                 >
                   <RotateCcw className="w-3 h-3 mr-2" />
-                  {language === 'japanese' ? '再試行' : 'Retry'}
+                  {language === "japanese" ? "再試行" : "Retry"}
                 </Button>
               )}
             </div>
-          ) : hasWeatherInfo ? (
-            <WeatherDisplay content={content} language={language} />
           ) : (
-            <div className={cn(
-              'text-sm leading-relaxed prose prose-sm max-w-none',
-              language === 'japanese' && 'japanese-text',
-              'prose-p:mb-2 prose-ul:my-2 prose-li:mb-1',
-              isUser ? 'text-primary-foreground' : 'text-foreground'
-            )}>
+            <div
+              className={cn(
+                "text-sm leading-relaxed prose prose-sm max-w-none",
+                language === "japanese" && "japanese-text",
+                "prose-p:mb-2 prose-ul:my-2 prose-li:mb-1",
+                isUser ? "text-primary-foreground" : "text-foreground"
+              )}
+            >
               <ReactMarkdown components={markdownComponents}>
                 {content}
               </ReactMarkdown>
@@ -136,7 +157,7 @@ const ChatMessage = ({ message, className, onRetry }) => {
           </span>
           {!isUser && language && (
             <Badge variant="outline" className="text-xs px-1.5 py-0.5">
-              {language === 'japanese' ? '日本語' : 'EN'}
+              {language === "japanese" ? "日本語" : "EN"}
             </Badge>
           )}
         </div>

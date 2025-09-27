@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { CardContent, CardHeader } from "../ui/card";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
-import ChatMessage from "./ChatMessage";
+import ChatMessage from "./chatMessage";
 import InputSection from "./InputSection";
 import { cn } from "@/lib/utils";
 import { RefreshCw } from "lucide-react";
