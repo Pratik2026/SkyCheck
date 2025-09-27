@@ -1,8 +1,8 @@
 from typing import Optional
 from fastapi import HTTPException
 from fastapi.concurrency import run_in_threadpool
-from backend.app.crew.weather_crew import WeatherCrew
-from backend.app.core.config import settings
+from app.crew.weather_crew import WeatherCrew
+from app.core.config import settings
 import logging
 
 logger = logging.getLogger("jpn_weather_bot.weather_service")

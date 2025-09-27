@@ -1,23 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException
-from backend.app.schema import ChatRequest, ChatResponse
-from backend.app.services.weather_service import WeatherService
-from backend.app.core.config import settings
+from app.schema import ChatRequest, ChatResponse
+from app.services.weather_service import WeatherService
+from app.core.config import settings
 import logging
 import re
 
 router = APIRouter()
 logger = logging.getLogger("jpn_weather_bot.api")
 
-
 def get_weather_service() -> WeatherService:
     return WeatherService()
-
 
 def detect_language(text: str) -> str:
     """Detect if the input text is in Japanese or English"""
     has_japanese = bool(re.search(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]', text))
     return 'japanese' if has_japanese else 'english'
-
 
 def extract_user_friendly_error(error_message: str, language: str) -> str:
     """Extract user-friendly error message from technical error details"""
@@ -46,6 +43,7 @@ def extract_user_friendly_error(error_message: str, language: str) -> str:
     # Generic error
     return "申し訳ございませんが、エラーが発生しました。もう一度お試しください。" if language == 'japanese' else "The service is currently unavailable. Please try again."
 
+# Remove root route from here since it's in main.py now
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(
@@ -58,7 +56,7 @@ async def chat_endpoint(
     try:
         result = await weather_service.process(request.message, request.location)
 
-        if result.startswith("⚠") or "error occurred during processing" in result.lower():
+        if result.startswith("⚠ ") or "error occurred during processing" in result.lower():
             user_friendly_error = extract_user_friendly_error(result, detected_language)
             logger.error("Weather processing error: %s", result)
 

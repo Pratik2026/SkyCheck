@@ -1,15 +1,11 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from backend.app.api import routes
-from backend.app.core.config import settings
-from backend.app.core.logging_setup import configure_logging
-from backend.app.services.weather_service import WeatherService
-from backend.app.crew.weather_crew import WeatherCrew
+from app.api import routes
+from app.core.config import settings
+from app.core.logging_setup import configure_logging
+from app.services.weather_service import WeatherService
+from app.crew.weather_crew import WeatherCrew
 import logging
-import os
-from pathlib import Path
 
 logger = configure_logging()
 
@@ -21,14 +17,15 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Update CORS for Render deployment
+# CORS configuration for separate frontend deployment
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:5173",
+        "https://*.vercel.app", 
         "https://*.onrender.com",
-        "https://skycheck.onrender.com"
+        "https://skycheck-weather.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
@@ -41,9 +38,8 @@ def get_weather_service() -> WeatherService:
 
 @app.on_event("startup")
 async def startup_event():
-    logger.info("Starting up app and initializing Weather Crew...")
+    logger.info("Starting up Weather API...")
     try:
-        # initialize crew and attach to app.state
         crew = WeatherCrew(google_api_key=settings.GOOGLE_API_KEY)
         app.state.weather_crew = crew
         logger.info("Weather Crew initialized successfully.")
@@ -53,48 +49,26 @@ async def startup_event():
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    logger.info("Shutting down application...")
+    logger.info("Shutting down Weather API...")
 
-# Include API routes with /api prefix
-app.include_router(routes.router, prefix="/api", dependencies=[Depends(get_weather_service)])
-
-# Serve React static files
-static_dir = Path("static")
-if static_dir.exists():
-    app.mount("/static", StaticFiles(directory=static_dir), name="static")
-    
-
-    @app.get("/{full_path:path}")
-    async def serve_react_app(full_path: str):
-        """
-        Serve React app for all non-API routes.
-        This handles client-side routing.
-        """
-        # If the path is an API route, let FastAPI handle it
-        if full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("redoc"):
-            return {"error": "API route not found"}
-        
-        # For all other routes, serve the React app
-        index_file = static_dir / "index.html"
-        if index_file.exists():
-            return FileResponse(index_file)
-        else:
-            return {"error": "React app not found. Make sure to build the frontend."}
-
-    @app.get("/")
-    async def serve_react_root():
-        index_file = static_dir / "index.html"
-        if index_file.exists():
-            return FileResponse(index_file)
-        else:
-            return {"message": "Weather Chatbot API is running! Build the frontend to see the app."}
-else:
-    # Fallback if static directory doesn't exist
-    @app.get("/")
-    async def api_root():
-        return {
-            "message": "Weather Chatbot API is running!",
-            "status": "Backend only - Frontend not built yet",
-            "docs": "/docs",
-            "api": "/api"
+# Root route for API
+@app.get("/")
+async def root():
+    return {
+        "message": "SkyCheck Weather API",
+        "status": "running",
+        "version": settings.version,
+        "docs": "/docs",
+        "endpoints": {
+            "chat": "/chat",
+            "health": "/health"
         }
+    }
+
+# Health check
+@app.get("/health")
+async def health():
+    return {"status": "healthy", "service": "weather-api"}
+
+# Include API routes (without /api prefix since this is backend only)
+app.include_router(routes.router, dependencies=[Depends(get_weather_service)])
