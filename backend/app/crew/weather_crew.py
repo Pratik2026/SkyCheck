@@ -1,6 +1,6 @@
 """
-WeatherCrew - Main orchestrator for the multilingual weather chatbot.
-Coordinates agents and tasks for intelligent weather query processing with intent classification.
+WeatherCrew - Optimized 3-agent system for multilingual weather chatbot.
+Coordinates agents and tasks with integrated advisory functionality in the response agent.
 """
 
 from crewai import Crew, Process
@@ -16,14 +16,14 @@ from .intent_classifier import classify_intent, IntentClassifier
 
 class WeatherCrew:
     """
-    Multi-agent system for processing weather queries in Japanese or English using CrewAI.
-    Features intelligent intent classification to optimize processing efficiency.
+    Optimized 3-agent system for processing weather queries in Japanese or English using CrewAI.
+    Features intelligent intent classification and integrated advisory functionality.
 
     This class orchestrates:
       - Intent classification (rule-based + LLM hybrid)
       - Language detection for all query types
       - Weather data fetching via OpenWeatherMap (when needed)
-      - Culturally appropriate advice and responses
+      - Integrated weather-based advice and culturally appropriate responses
       - Efficient task routing based on query type
     """
 
@@ -67,7 +67,7 @@ class WeatherCrew:
             
             # Step 3: Create appropriate tasks based on intent
             if intent == IntentClassifier.WEATHER_QUERY:
-                # Full weather processing pipeline
+                # Full weather processing pipeline with integrated advisory
                 tasks = create_weather_tasks(user_query, location, self.agents)
                 agents_to_use = list(self.agents.values())
             else:
