@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ChatInterface from "./components/chat/ChatInterface";
+import ChatInterface from "./components/chat/chatInterface";
 import "./App.css";
 import Header from "./components/Header";
 import DoodleBackground from "./components/chat/doodleBackground";
