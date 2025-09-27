@@ -1,10 +1,16 @@
-from typing import Optional
+from typing import Optional, List, Dict
 from pydantic import BaseModel, Field
+
+
+class ContextMessage(BaseModel):
+    role: str = Field(..., description="'user' or 'assistant'")
+    content: str = Field(..., description="Message content")
 
 
 class ChatRequest(BaseModel):
     message: str = Field(..., description="User's message in Japanese or English", example="今日の東京の天気はどうですか？ / What's the weather like in Tokyo today?")
     location: str = Field(default="", description="Optional location override", example="Tokyo")
+    context: List[ContextMessage] = Field(default=[], description="Recent conversation context (last few messages)")
 
 
 class ChatResponse(BaseModel):

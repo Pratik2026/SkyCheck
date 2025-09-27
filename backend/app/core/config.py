@@ -8,7 +8,7 @@ class Settings(BaseSettings):
 
     GOOGLE_API_KEY: str = Field(..., env="GOOGLE_API_KEY")
     OPENWEATHERMAP_API_KEY: str = Field(..., env="OPENWEATHERMAP_API_KEY")
-    SERPER_API_KEY: str | None = Field(None, env="SERPER_API_KEY")
+    LLM_MODEL: str = Field(..., env="LLM_MODEL")
 
     cors_origins: list[str] = [
         "http://localhost:3000",

@@ -44,7 +44,7 @@ def extract_user_friendly_error(error_message: str, language: str) -> str:
         return "指定された場所の天気情報が見つかりませんでした。" if language == 'japanese' else "Weather information for the specified location was not found."
     
     # Generic error
-    return "申し訳ございませんが、エラーが発生しました。もう一度お試しください。" if language == 'japanese' else "Sorry, an error occurred. Please try again."
+    return "申し訳ございませんが、エラーが発生しました。もう一度お試しください。" if language == 'japanese' else "The service is currently unavailable. Please try again."
 
 
 @router.post("/chat", response_model=ChatResponse)
@@ -101,26 +101,3 @@ async def chat_endpoint(
                 "language": detected_language,
             },
         ) from e
-
-    """Health check endpoint"""
-    try:
-        crew_ok = getattr(weather_service, "crew", None) is not None
-        env_status = {
-            "google_api_key": bool(settings.GOOGLE_API_KEY),
-            "weather_api_key": bool(settings.OPENWEATHERMAP_API_KEY),
-            "serper_api_key": bool(settings.SERPER_API_KEY),
-        }
-        is_healthy = crew_ok and env_status["google_api_key"] and env_status["weather_api_key"]
-
-        return {
-            "status": "healthy" if is_healthy else "unhealthy",
-            "crew_initialized": crew_ok,
-            "environment_variables": env_status,
-            "ai_model": "google/gemini-2.0-flash",
-            "weather_api": "OpenWeatherMap",
-            "supported_languages": ["Japanese", "English"],
-            "features": ["voice_input", "multilingual_support", "dynamic_location_extraction"]
-        }
-    except Exception as e:
-        logger.error("Health check failed: %s", str(e))
-        raise HTTPException(status_code=503, detail="Service unavailable")

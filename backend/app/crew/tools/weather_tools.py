@@ -25,7 +25,7 @@ def get_weather_info(location: str) -> str:
     """
     api_key = os.getenv("OPENWEATHERMAP_API_KEY")
     if not api_key:
-        return "⚠ Weather API key not configured. Please set OPENWEATHERMAP_API_KEY in .env file."
+        return "⚠️ Weather API key not configured. Please set OPENWEATHERMAP_API_KEY in .env file."
 
     try:
         # Try to fetch weather data directly with the provided location
@@ -33,7 +33,7 @@ def get_weather_info(location: str) -> str:
         current_response = requests.get(current_url, timeout=10)
 
         if current_response.status_code != 200:
-            return f"⚠ Weather information for '{location}' could not be found. Please check the city name."
+            return f"⚠️ Weather information for '{location}' could not be found. Please check the city name."
 
         current_data = current_response.json()
 
@@ -45,17 +45,17 @@ def get_weather_info(location: str) -> str:
         return format_weather_info(current_data, forecast_data)
 
     except requests.exceptions.Timeout:
-        return "⚠ Weather service response is too slow. Please try again later."
+        return "⚠️ Weather service response is too slow. Please try again later."
     except requests.exceptions.RequestException as e:
-        return f"⚠ Network error: {str(e)}"
+        return f"⚠️ Network error: {str(e)}"
     except Exception as e:
-        return f"⚠ Error occurred while processing weather data: {str(e)}"
+        return f"⚠️ Error occurred while processing weather data: {str(e)}"
 
 
-@tool("Language Detector")
 def detect_language(text: str) -> str:
     """
-    Detect the language of user input.
+    Detect the language of user input using character analysis.
+    This is a standalone function (not a CrewAI tool) for efficiency.
 
     Args:
         text (str): Input sentence in Japanese or English.

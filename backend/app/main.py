@@ -25,9 +25,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Dependency provider for WeatherService (can be replaced / mocked in tests)
 def get_weather_service() -> WeatherService:
-    # Use previously-initialized crew from app.state if present
     crew = getattr(app.state, "weather_crew", None)
     return WeatherService(crew=crew) if crew else WeatherService()
 
@@ -48,8 +46,6 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_event():
     logger.info("Shutting down application...")
-    # If you need to close any connections or flush logs, do here.
 
 
-# include API routes and pass dependency override to FastAPI's DI
 app.include_router(routes.router, prefix="", dependencies=[Depends(get_weather_service)])

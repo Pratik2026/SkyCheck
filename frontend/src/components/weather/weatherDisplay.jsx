@@ -105,116 +105,8 @@ const WeatherDisplay = ({ content, language, className }) => {
   const weatherData = parseWeatherData(content);
   const isJapanese = language === "japanese";
 
-  // Determine weather theme class
-  const getWeatherTheme = (emoji) => {
-    if (emoji.includes("☀️")) {
-      return "weather-sunny";
-    }
-    if (emoji.includes("🌧️") || emoji.includes("🌦️")) {
-      return "weather-rainy";
-    }
-    if (emoji.includes("❄️")) {
-      return "weather-snowy";
-    }
-    if (emoji.includes("⛈️")) {
-      return "weather-stormy";
-    }
-    if (emoji.includes("☁️")) {
-      return "weather-cloudy";
-    }
-    return "bg-gradient-to-br from-blue-400 to-blue-600";
-  };
-
-  const WeatherMetric = ({ icon, label, value, unit = "" }) => (
-    <div className="flex items-center gap-2 text-sm">
-      <div className="text-white/80">{icon}</div>
-      <div className="flex-1">
-        <div className="text-white/70 text-xs">{label}</div>
-        <div className="text-white font-medium">
-          {value}
-          {unit}
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div className={cn("w-full max-w-md", className)}>
-      {/* Current Weather Card */}
-      <Card
-        className={cn(
-          "overflow-hidden border-0 text-white",
-          getWeatherTheme(weatherData.current.emoji || "🌤️")
-        )}
-      >
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-3 text-white">
-            <span className="text-3xl">{weatherData.current.emoji}</span>
-            <div>
-              <div className="text-lg font-medium">{weatherData.location}</div>
-              <div className="text-white/80 text-sm font-normal">
-                {weatherData.current.description}
-              </div>
-            </div>
-          </CardTitle>
-        </CardHeader>
-
-        <CardContent className="space-y-4">
-          {/* Temperature */}
-          {weatherData.current.temperature && (
-            <div className="text-center">
-              <div className="text-4xl font-bold text-white">
-                {weatherData.current.temperature}°C
-              </div>
-              {weatherData.current.feelsLike && (
-                <div className="text-white/70 text-sm">
-                  {isJapanese ? "体感" : "Feels like"}{" "}
-                  {weatherData.current.feelsLike}°C
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Weather Metrics Grid */}
-          <div className="grid grid-cols-2 gap-4">
-            {weatherData.current.humidity && (
-              <WeatherMetric
-                icon={<Droplets className="w-4 h-4" />}
-                label={isJapanese ? "湿度" : "Humidity"}
-                value={weatherData.current.humidity}
-                unit="%"
-              />
-            )}
-
-            {weatherData.current.windSpeed && (
-              <WeatherMetric
-                icon={<Wind className="w-4 h-4" />}
-                label={isJapanese ? "風速" : "Wind"}
-                value={weatherData.current.windSpeed}
-                unit=" m/s"
-              />
-            )}
-
-            {weatherData.current.pressure && (
-              <WeatherMetric
-                icon={<Gauge className="w-4 h-4" />}
-                label={isJapanese ? "気圧" : "Pressure"}
-                value={weatherData.current.pressure}
-                unit=" hPa"
-              />
-            )}
-
-            {weatherData.current.visibility && (
-              <WeatherMetric
-                icon={<Eye className="w-4 h-4" />}
-                label={isJapanese ? "視界" : "Visibility"}
-                value={weatherData.current.visibility}
-                unit=" km"
-              />
-            )}
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Forecast Cards */}
       {weatherData.forecast.length > 0 && (
@@ -245,7 +137,6 @@ const WeatherDisplay = ({ content, language, className }) => {
         </div>
       )}
 
-      {/* Fallback: Display original content if parsing fails */}
       {!weatherData.location && (
         <Card>
           <CardContent className="p-4">
