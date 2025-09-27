@@ -133,14 +133,6 @@ const ChatInterface = ({ className, language, onLanguageChange }) => {
             : msg
         )
       );
-
-      if (response.success) {
-        toast(
-          detectedLanguage === "japanese"
-            ? "メッセージが正常に送信されました"
-            : "Message sent successfully", { type: "success" }
-        );
-      }
     } catch (error) {
       const errorMessage = getErrorToastMessage(error, detectedLanguage);
 
